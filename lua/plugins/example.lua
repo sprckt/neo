@@ -60,6 +60,11 @@ return {
         sorting_strategy = "ascending",
         winblend = 0,
       },
+      pickers = {
+        find_files = {
+          find_command = { "fd", "--type", "f", "--hidden", "--exclude", ".git" },
+        },
+      },
     },
   },
 
