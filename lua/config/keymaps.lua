@@ -25,3 +25,9 @@ end, { desc = "Insert NOTE comment" })
 vim.keymap.set("n", "<leader>ma", function()
   insert_comment("AI")
 end, { desc = "Insert NOTE comment" })
+
+-- Run current python file
+vim.keymap.set("n", "<leader>rr", function()
+  local file = vim.fn.expand("%:p")
+  vim.cmd("split | terminal uv run " .. file)
+end, { desc = "Run Python file" })
