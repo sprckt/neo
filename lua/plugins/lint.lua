@@ -5,6 +5,15 @@ return {
       markdown = { "markdownlint-cli2" },
     },
     linters = {
+      ["shellcheck"] = {
+        args = function()
+          local filename = vim.fn.expand("%:t")
+          if filename:match("^%.env") or filename == ".envrc" then
+            return { "--exclude=SC2034", "--format", "json", "-" }
+          end
+          return { "--format", "json", "-" }
+        end,
+      },
       ["markdownlint-cli2"] = {
         args = {
           "--config",
