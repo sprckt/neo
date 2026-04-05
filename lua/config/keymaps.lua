@@ -13,9 +13,6 @@ local function insert_comment(tag)
   vim.cmd("startinsert")
 end
 
-vim.keymap.set("n", "<leader>mf", function()
-  insert_comment("FIXME")
-end, { desc = "Insert FIXME comment" })
 vim.keymap.set("n", "<leader>mt", function()
   insert_comment("TODO")
 end, { desc = "Insert TODO comment" })
@@ -24,7 +21,7 @@ vim.keymap.set("n", "<leader>mn", function()
 end, { desc = "Insert NOTE comment" })
 vim.keymap.set("n", "<leader>ma", function()
   insert_comment("AI")
-end, { desc = "Insert NOTE comment" })
+end, { desc = "Insert AI comment" })
 
 -- Single reusable terminal for running Python files
 local python_term = nil
@@ -68,7 +65,9 @@ local function paste_image()
     default = default_dir .. "/" .. default_name,
     completion = "file",
   }, function(input)
-    if not input or input == "" then return end
+    if not input or input == "" then
+      return
+    end
 
     -- Create parent directory if it doesn't exist
     local dir = vim.fn.fnamemodify(input, ":h")
@@ -79,10 +78,8 @@ local function paste_image()
     if vim.fn.executable("pngpaste") == 1 then
       ok = os.execute("pngpaste " .. vim.fn.shellescape(input)) == 0
     else
-      local script = string.format(
-        'tell application "System Events" to write (the clipboard as PNG) to (POSIX file "%s")',
-        input
-      )
+      local script =
+        string.format('tell application "System Events" to write (the clipboard as PNG) to (POSIX file "%s")', input)
       ok = os.execute("osascript -e " .. vim.fn.shellescape(script)) == 0
     end
 
@@ -92,17 +89,20 @@ local function paste_image()
       local md = string.format("![image](%s)", rel)
       local row, col = unpack(vim.api.nvim_win_get_cursor(0))
       local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
-      vim.api.nvim_buf_set_lines(0, row - 1, row, false,
-        { line:sub(1, col) .. md .. line:sub(col + 1) })
+      vim.api.nvim_buf_set_lines(0, row - 1, row, false, { line:sub(1, col) .. md .. line:sub(col + 1) })
       vim.api.nvim_win_set_cursor(0, { row, col + #md })
       vim.notify("Saved: " .. input, vim.log.levels.INFO)
     else
-      vim.notify(
-        "No image in clipboard (or pngpaste/osascript unavailable)",
-        vim.log.levels.WARN
-      )
+      vim.notify("No image in clipboard (or pngpaste/osascript unavailable)", vim.log.levels.WARN)
     end
   end)
 end
 
 vim.keymap.set("n", "<leader>pi", paste_image, { desc = "Paste clipboard image" })
+
+-- Register keygroups
+require("which-key").add({
+  { "<leader>m", group = "Markdown Comments", icon = "📝" },
+  { "<leader>r", group = "Run/Test", icon = "🧪" },
+  { "<leader>p", group = "Paste", icon = "📋" },
+})
