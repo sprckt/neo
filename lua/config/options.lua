@@ -13,5 +13,8 @@ vim.opt.spellfile = {
   vim.fn.expand("project.utf-8.add"), -- project dictionary (relative to cwd)
 }
 
+-- Auto-save when navigating away from a buffer (covers all buffer-switch scenarios)
+vim.opt.autowriteall = true
+
 -- Autoformat
 vim.g.autoformat = true
