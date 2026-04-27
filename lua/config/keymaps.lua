@@ -23,6 +23,46 @@ vim.keymap.set("n", "<leader>ma", function()
   insert_comment("AI")
 end, { desc = "Insert AI comment" })
 
+local function insert_page_break()
+  local row = vim.api.nvim_win_get_cursor(0)[1]
+  vim.api.nvim_buf_set_lines(0, row, row, false, {
+    '<div class="page-break"></div> ',
+    "",
+  })
+  vim.api.nvim_win_set_cursor(0, { row + 2, 0 })
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function(args)
+    local opts = { buffer = args.buf }
+    vim.keymap.set(
+      "n",
+      "<leader>mb",
+      insert_page_break,
+      vim.tbl_extend("force", opts, { desc = "Insert page break" })
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>mB",
+      'ciw**<C-r>"**<Esc>',
+      vim.tbl_extend("force", opts, { desc = "Bold word" })
+    )
+    vim.keymap.set(
+      "x",
+      "<leader>mB",
+      'c**<C-r>"**<Esc>',
+      vim.tbl_extend("force", opts, { desc = "Bold selection" })
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>mS",
+      [[cis**<C-r>=substitute(@", "\n$", "", "")<CR>**<Esc>]],
+      vim.tbl_extend("force", opts, { desc = "Bold sentence" })
+    )
+  end,
+})
+
 -- Single reusable terminal for running Python files
 local python_term = nil
 
